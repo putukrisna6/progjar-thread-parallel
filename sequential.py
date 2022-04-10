@@ -11,9 +11,3 @@ for ii in sys.stdin:
         print("unknown command...: ", ii)
         sys.exit(0)
 print("value = ", value)
-
-# import threading
-
-# a = threading.Lock()
-# a.acquire_lock()
-# a.release_()
