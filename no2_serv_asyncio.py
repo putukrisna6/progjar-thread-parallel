@@ -11,11 +11,10 @@ class ZenServer(asyncio.Protocol):
         self.transport = transport
         self.address = transport.get_extra_info('peername')
         self.data = b''
+        self.value = 0
         print('Accepted connection from {}'.format(self.address))
 
     def data_received(self, data):
-        global value
-        value = 0
 
         self.data += data
         if self.data.endswith(b'.'):
@@ -24,11 +23,11 @@ class ZenServer(asyncio.Protocol):
 
             m = res.split()
             if m[0] == 'ADD':
-                value += int(m[1])
+                self.value += int(m[1])
             elif m[0] == 'DEC':
-                value -= int(m[1])
+                self.value -= int(m[1])
 
-            msg = str(value) + '.'
+            msg = str(self.value) + '.'
 
             self.transport.write(bytes(msg, encoding='ascii'))
             self.data = b''
