@@ -5,3 +5,9 @@ Anggota Kelompok:
 2. 05111940000062 Putu Krisna Andyartha
 3. 05111940000082 Thomas Felix B
 4. 05111940000175 Muhammad Daffa
+
+# Steps
+## Prep
+```bash
+python3 randomizer.py > input.txt
+```
