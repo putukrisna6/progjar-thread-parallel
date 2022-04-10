@@ -39,15 +39,10 @@ if __name__ == '__main__':
 
     address = (HOST, PORT)
     jobs = []
+
+    print("JOBS:", NUMJOBS)
+
     for i in range(NUMJOBS):
         p = multiprocessing.Process(target=worker, args=(address, i, data))
-        jobs.append(p)
-    print("JOBS:", len(jobs))
-
-    for p in jobs:
         p.start()
-
-    for p in jobs:
         p.join()
-
-# vim:sw=4:ai

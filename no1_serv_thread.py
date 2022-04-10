@@ -13,7 +13,7 @@ def recvall(sock, length):
         data += more
     return data
 
-def start_threads(listener, workers=4):
+def start_threads(listener, workers):
     t = (listener,)
     for i in range(workers):
         Thread(target=my_threads, args=t).start()
@@ -22,40 +22,40 @@ def my_threads(listener):
     while True:
         sock, address = listener.accept()
         print('Accepted connection from {}'.format(address))
-        my_handle_conversation(sock, address)
+        ThreadedServer.my_handle_conversation(ThreadedServer, sock, address)
 
-def my_handle_conversation(sock, address):
-    try:
-        while True:
-            my_handle_request(sock)
-    except EOFError:
-        print('Client socket to {} has closed'.format(address))
-    except Exception as e:
-        print('Client {} error: {}'.format(address, e))
-    finally:
-        sock.close()
+class ThreadedServer:
 
-def my_handle_request(sock):
-    global value
-    value = 0
+    def my_handle_conversation(self, sock, address):
+        self.value = 0
+        try:
+            while True:
+                ThreadedServer.my_handle_request(self, sock)
+        except EOFError:
+            print('Client socket to {} has closed'.format(address))
+        except Exception as e:
+            print('Client {} error: {}'.format(address, e))
+        finally:
+            sock.close()
 
-    len_msg = recvall(sock, 3)
-    message = recvall(sock, int(len_msg))
-    message = str(message, encoding='ascii')
+    def my_handle_request(self, sock):
+        len_msg = recvall(sock, 3)
+        message = recvall(sock, int(len_msg))
+        message = str(message, encoding='ascii')
 
-    m = message.split()
-    if m[0] == 'ADD':
-        value += int(m[1])
-    elif m[0] == 'DEC':
-        value -= int(m[1])
-    else:
-        print('unknown: ', m)
-        sys.exit(0)
+        m = message.split()
+        if m[0] == 'ADD':
+            self.value += int(m[1])
+        elif m[0] == 'DEC':
+            self.value -= int(m[1])
+        else:
+            print('unknown: ', m)
+            sys.exit(0)
 
-    msg = str(value)
-    len_msg = b'%03d' % (len(msg),)
-    msg = len_msg + bytes(msg, encoding='ascii')
-    sock.sendall(msg)
+        msg = str(self.value)
+        len_msg = b'%03d' % (len(msg),)
+        msg = len_msg + bytes(msg, encoding='ascii')
+        sock.sendall(msg)
     
 
 if __name__ == '__main__':
